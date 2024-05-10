@@ -31,7 +31,7 @@
     max: 2
 
 - job:
-    name: hello-world
+    name: 00-SCS/hello-world
     description: "Hello-World Job"
     # nodeset: ubuntu-jammy
     run: playbooks/hello-world.yaml
@@ -45,7 +45,7 @@
       - name: semaphore-hello-world
 
 - job:
-    name: deploy
+    name: 00-SCS/deploy
     description: "Deploy Job"
     # nodeset: ubuntu-jammy
     pre-run: playbooks/pre.yaml
@@ -62,5 +62,6 @@
 
 - project:
     name: Hello-World-Project
+    merge-mode: squash-merge    
     templates:
       - 00-SCS-template
