@@ -61,7 +61,7 @@
         - hello-world
     post:
       jobs:
-        - flake8
+        - hello-world
     periodic-hourly-otc:
       jobs:
         - ansible-lint
