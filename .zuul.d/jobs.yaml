@@ -1,6 +1,6 @@
 ---
 - job:
-    name: 00-SCS/hello-world
+    name: hello-world
     description: "Hello-World Job"
     # nodeset: ubuntu-jammy
     run: playbooks/hello-world.yaml
@@ -14,7 +14,7 @@
       - name: semaphore-hello-world
 
 - job:
-    name: 00-SCS/deploy
+    name: deploy
     description: "Deploy Job"
     # nodeset: ubuntu-jammy
     pre-run: playbooks/pre.yaml
