@@ -49,13 +49,17 @@
       - name: semaphore-hello-world
 
 - project:
-    name: Hello-World-Project
     merge-mode: squash-merge    
     check:
       jobs:
-        - noop
+        - hello-world
     gate:
       jobs:
         - hello-world
-
+    post:
+      jobs:
+        - flake8
+    periodic-hourly-otc:
+      jobs:
+        - ansible-lint
 
