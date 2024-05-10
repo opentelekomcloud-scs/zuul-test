@@ -1,0 +1,8 @@
+---
+- semaphore:
+    name: semaphore-hello-world
+    max: 2
+
+
+
+
