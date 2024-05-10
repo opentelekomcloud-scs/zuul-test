@@ -50,6 +50,9 @@
 
 - project:
     merge-mode: squash-merge    
+    push:
+      jobs:
+        - deploy    
     check:
       jobs:
         - hello-world
