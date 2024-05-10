@@ -1,4 +1,16 @@
 ---
+- pipeline:
+    name: Hello-World
+    description: "Hello World Pipeline"
+    manager: independent
+
+- project-template:
+    name: 00-SCS-template
+    check:
+      jobs:
+        - 00-SCS/hello-world
+        - 00-SCS/deploy
+
 - secret:
     name: SECRET_TEST
     data:
@@ -20,7 +32,8 @@
 
 - job:
     name: hello-world
-    nodeset: ubuntu-jammy
+    description: "Hello-World Job"
+    # nodeset: ubuntu-jammy
     run: playbooks/hello-world.yaml
     required-projects:
       - opentelekomcloud-scs/testbed
@@ -33,7 +46,8 @@
 
 - job:
     name: deploy
-    nodeset: ubuntu-jammy
+    description: "Deploy Job"
+    # nodeset: ubuntu-jammy
     pre-run: playbooks/pre.yaml
     run: playbooks/deploy.yaml
     post-run: playbooks/post.yaml
@@ -47,23 +61,6 @@
       - name: semaphore-hello-world
 
 - project:
-    merge-mode: squash-merge
-    check:
-      jobs:
-        - flake8
-        - ansible-lint
-    deploy:
-      jobs:
-        - deploy
-    post:
-      jobs:
-        - flake8
-        - hello-world
-    periodic-hourly-otc:
-      jobs:
-        - ansible-lint
-        - flake8
-        - hello-world
-#        - testbed-deploy-managerless
-#        - python-black
-#        - yamllint
+    name: Hello-World-Project
+    templates:
+      - 00-SCS-template
