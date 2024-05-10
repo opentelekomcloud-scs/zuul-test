@@ -17,7 +17,13 @@
 - semaphore:
     name: semaphore-hello-world
     max: 2
-    
+
+- nodeset:
+    name: testbed-orchestrator
+    nodes:
+      - name: orchestrator
+        label: testbed-orchestrator
+
 - job:
     name: hello-world
     description: "Hello-World Job"
@@ -47,4 +53,15 @@
         secret: SECRET_TEST 
     semaphores:
       - name: semaphore-hello-world
+
+- project:
+    name: Hello-World-Project
+    merge-mode: squash-merge    
+    check:
+      jobs:
+        - noop
+    gate:
+      jobs:
+        - hello-world
+
 
