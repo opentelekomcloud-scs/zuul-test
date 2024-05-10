@@ -18,19 +18,13 @@
     name: semaphore-hello-world
     max: 2
 
-- nodeset:
-    name: testbed-orchestrator
-    nodes:
-      - name: orchestrator
-        label: testbed-orchestrator
-
 - job:
     name: hello-world
     description: "Hello-World Job"
-    # nodeset: ubuntu-jammy
+    nodeset: ubuntu-jammy
     run: playbooks/hello-world.yaml
     required-projects:
-      - opentelekomcloud-scs/testbed
+      - opentelekomcloud-scs/zuul-test
     timeout: 10800
     secrets:
       - name: secret
@@ -41,12 +35,12 @@
 - job:
     name: deploy
     description: "Deploy Job"
-    # nodeset: ubuntu-jammy
+    nodeset: ubuntu-jammy
     pre-run: playbooks/pre.yaml
     run: playbooks/deploy.yaml
     post-run: playbooks/post.yaml
     required-projects:
-      - opentelekomcloud-scs/testbed
+      - opentelekomcloud-scs/zuul-test
     timeout: 10800
     secrets:
       - name: secret
