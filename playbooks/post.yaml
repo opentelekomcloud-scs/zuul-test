@@ -1,0 +1,11 @@
+---
+- name: post.yaml
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Print post.yaml message
+      debug:
+        msg: "post.yaml"
+
+    - name: Include hello_world.yaml
+      include: hello_world.yaml

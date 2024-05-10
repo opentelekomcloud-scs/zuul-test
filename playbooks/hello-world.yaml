@@ -1,0 +1,12 @@
+---
+- name: Print hostname and current time on all hosts
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Print <hostname> <date & time> Hello World!
+      shell: echo "$(hostname) $(date '+%Y-%m-%d %H:%M:%S') Hello World!"
+      register: output
+
+    - name: Display the result
+      debug:
+        msg: "{{ output.stdout }}"
