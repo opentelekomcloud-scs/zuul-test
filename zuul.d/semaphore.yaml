@@ -1,6 +1,6 @@
 ---
 - semaphore:
-    name: semaphore-hello-world
+    name: semaphore-test
     max: 2
 
 
