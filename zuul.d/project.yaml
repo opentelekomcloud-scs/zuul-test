@@ -3,7 +3,8 @@
     check:
       jobs:
         - noop
+        - untrusted
     gate:
       jobs:
-        - hello-world/untrusted
-        - hello-world/trusted
+        - untrusted
+        - trusted
