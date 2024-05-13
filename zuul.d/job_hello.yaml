@@ -2,7 +2,7 @@
 - job:
     name: hello-world/untrusted
     description: "Hello-World untrusted Job"
-    # nodeset: ubuntu-jammy
+    nodeset: ubuntu-jammy
     run: playbooks/hello-world.yaml
     required-projects:
       - opentelekomcloud-scs/zuul-test
