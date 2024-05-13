@@ -1,4 +1,7 @@
 - project:
+    name: testproject
+    templates:
+      - zuul-project-template
     check:
       jobs:
         - noop
