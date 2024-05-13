@@ -49,6 +49,11 @@
       - name: semaphore-hello-world
 
 - project:
+    check:
+      jobs:
+        - noop
+
+- project:
     merge-mode: squash-merge    
     push:
       jobs:
