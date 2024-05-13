@@ -1,5 +1,6 @@
 - project:
     name: testproject
+    merge-mode: squash-merge
     check:
       jobs:
         - noop
