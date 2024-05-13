@@ -1,7 +1,9 @@
 - project:
     name: testproject
-    templates:
-      - zuul-project-template
     check:
       jobs:
         - noop
+    gate:
+      jobs:
+        - hello-world/untrusted
+        - hello-world/trusted
