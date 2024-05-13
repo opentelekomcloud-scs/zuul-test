@@ -1,6 +1,6 @@
 ---
 - job:
-    name: hello-world-untrusted
+    name: hello-world/untrusted
     description: "Hello-World untrusted Job"
     # nodeset: ubuntu-jammy
     run: playbooks/hello-world.yaml
