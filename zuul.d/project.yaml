@@ -4,7 +4,6 @@
       jobs:
         - noop
         - untrusted
-        - trusted
     gate:
       jobs:
         - untrusted
