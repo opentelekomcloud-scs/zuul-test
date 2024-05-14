@@ -2,9 +2,9 @@
 - job:
     name: testbed-deploy-managerless
     nodeset: ubuntu-jammy
-    pre-run: playbooks/managerless/pre.yml
-    run: playbooks/managerless/deploy.yml
-    post-run: playbooks/managerless/post.yml
+    pre-run: playbooks/scs/managerless/pre.yml
+    run: playbooks/scs/managerless/deploy.yml
+    post-run: playbooks/scs/managerless/post.yml
     required-projects:
       - osism/terraform-base
     timeout: 10800

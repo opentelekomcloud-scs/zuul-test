@@ -2,9 +2,9 @@
 - job:
     name: testbed-deploy-manager
     nodeset: ubuntu-jammy
-    pre-run: playbooks/pre.yml
-    run: playbooks/deploy.yml
-    post-run: playbooks/post.yml
+    pre-run: playbooks/scs/pre.yml
+    run: playbooks/scs/deploy.yml
+    post-run: playbooks/scs/post.yml
     required-projects:
       - osism/terraform-base
     timeout: 10800
