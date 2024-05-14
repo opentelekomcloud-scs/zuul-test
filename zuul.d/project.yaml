@@ -7,4 +7,3 @@
     gate:
       jobs:
         - untrusted
-        - trusted

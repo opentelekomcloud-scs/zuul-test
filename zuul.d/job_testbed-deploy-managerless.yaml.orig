@@ -16,3 +16,4 @@
         secret: SECRET_TESTBED
     semaphores:
       - name: semaphore-testbed-managerless
+      
