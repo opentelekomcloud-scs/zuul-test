@@ -1,7 +1,7 @@
 ---
 - semaphore:
-    name: semaphore-test
-    max: 2
+    name: semaphore
+    max: 1
 
 
 
