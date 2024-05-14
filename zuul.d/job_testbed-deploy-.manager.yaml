@@ -1,0 +1,18 @@
+---
+- job:
+    name: testbed-deploy-manager
+    nodeset: ubuntu-jammy
+    pre-run: playbooks/pre.yml
+    run: playbooks/deploy.yml
+    post-run: playbooks/post.yml
+    required-projects:
+      - osism/terraform-base
+    timeout: 10800
+    vars:
+      terraform_blueprint: testbed-manager
+      cloud_env: manager-otc
+    secrets:
+      - name: secret
+        secret: SECRET_TESTBED
+    semaphores:
+      - name: semaphore-testbed-manager

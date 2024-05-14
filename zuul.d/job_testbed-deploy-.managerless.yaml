@@ -1,0 +1,18 @@
+---
+- job:
+    name: testbed-deploy-managerless
+    nodeset: ubuntu-jammy
+    pre-run: playbooks/managerless/pre.yml
+    run: playbooks/managerless/deploy.yml
+    post-run: playbooks/managerless/post.yml
+    required-projects:
+      - osism/terraform-base
+    timeout: 10800
+    vars:
+      terraform_blueprint: testbed-managerless
+      cloud_env: managerless-otc
+    secrets:
+      - name: secret
+        secret: SECRET_TESTBED
+    semaphores:
+      - name: semaphore-testbed-managerless
