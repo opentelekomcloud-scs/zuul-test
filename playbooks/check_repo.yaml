@@ -1,0 +1,25 @@
+---
+- name: Check Repository for Recent Changes
+  hosts: localhost
+  gather_facts: false
+  vars:
+    repo_url: "https://api.github.com/repos/osism/testbed/commits"
+    headers:
+      Accept: "application/vnd.github.v3+json"
+    time_limit: "{{ lookup('pipe', 'date --date=\"24 hours ago\" +%Y-%m-%dT%H:%M:%SZ') }}"
+  tasks:
+    - name: Get the latest commits from the repository
+      uri:
+        url: "{{ repo_url }}"
+        method: GET
+        headers: "{{ headers }}"
+        return_content: true
+      register: repo_commits
+
+    - name: Check if there are any commits in the last 24 hours
+      set_fact:
+        changed: "{{ (repo_commits.json | selectattr('commit.committer.date', 'gt', time_limit) | list | count) > 0 }}"
+
+    - name: Output the changed flag
+      debug:
+        msg: "Repository changed in the last 24 hours: {{ changed }}"

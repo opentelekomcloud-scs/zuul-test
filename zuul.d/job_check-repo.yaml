@@ -1,0 +1,15 @@
+---
+- job:
+    name: check-repo
+    parent: hello-world
+    description: "Checks if OSISM testbed Repo has had any changes since 24h"
+    nodeset: ubuntu-jammy
+    run: playbooks/check_repo.yaml
+    required-projects:
+      - opentelekomcloud-scs/zuul-test
+    timeout: 10800
+    #secrets:
+    #  - name: secret
+    #    secret: SECRET_TEST 
+    semaphores:
+      - name: semaphore-clone

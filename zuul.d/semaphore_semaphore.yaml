@@ -1,0 +1,8 @@
+---
+- semaphore:
+    name: semaphore
+    max: 4
+
+
+
+

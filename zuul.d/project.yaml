@@ -3,6 +3,10 @@
     check:
       jobs:
         - untrusted
+        - check-repo
     gate:
       jobs:
         - untrusted
+    periodic-hourly:
+      jobs:
+        - check-repo
