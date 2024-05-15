@@ -57,13 +57,17 @@
       ansible.builtin.command:
         cmd: git merge source/master
         chdir: "{{ working_directory }}"
-      when: git_result.changed
+      when: 
+        - git_result.changed
+        - changed
       register: merge_result
 
     - name: Check if there were conflicts
       ansible.builtin.fail:
         msg: "Merge conflicts detected. Manual intervention required."
-      when: "'Conflicts:' in merge_result.stdout or 'conflict' in merge_result.stderr"
+      when: 
+        - "'Conflicts:' in merge_result.stdout or 'conflict' in merge_result.stderr"
+        - changed
 
     - name: Commit the merged changes if there were changes
       ansible.builtin.git:
@@ -71,14 +75,18 @@
         dest: "{{ working_directory }}"
         message: "{{ commit_message }}"
         commit: yes
-      when: merge_result.changed
+      when: 
+        - merge_result.changed
+        - changed
 
     - name: Push the changes to the target repository if there were changes
       ansible.builtin.git:
         repo: "{{ target_repo }}"
         dest: "{{ working_directory }}"
         push: yes
-      when: merge_result.changed
+      when: 
+        - merge_result.changed
+        - changed
 
     - name: Clean up the working directory after all operations
       ansible.builtin.file:
