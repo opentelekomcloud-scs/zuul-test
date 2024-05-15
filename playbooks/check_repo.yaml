@@ -3,7 +3,8 @@
   hosts: localhost
   gather_facts: false
   vars:
-    source_repo: "https://github.com/osism/testbed"
+#    source_repo: "https://github.com/osism/testbed"
+    source_repo: "https://github.com/opentelekomcloud-scs/zuul-test"
     target_repo: "https://github.com/opentelekomcloud-scs/zuul-test-src-repo"
     working_directory: "/tmp/repo-sync"
     commit_message: "Automated merge of changes from source repo"
@@ -20,6 +21,10 @@
         return_content: true
       register: repo_commits
 
+    - name: Debug
+      debug:
+        var: repo_commits
+        
     - name: Check if there are any commits in the last 24 hours
       set_fact:
         changed: "{{ (repo_commits.json | selectattr('commit.committer.date', 'gt', time_limit) | list | count) > 0 }}"
