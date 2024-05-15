@@ -52,7 +52,7 @@
         update: yes
       when: changed
       register: git_result
-
+ 
     - name: Merge changes from the source repository
       ansible.builtin.command:
         cmd: git merge source/master
