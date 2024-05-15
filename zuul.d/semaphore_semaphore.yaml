@@ -1,7 +1,7 @@
 ---
 - semaphore:
     name: semaphore
-    max: 4
+    max: 2
 
 
 

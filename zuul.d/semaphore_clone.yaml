@@ -1,6 +1,6 @@
 ---
 - semaphore:
-    name: semaphore
+    name: semaphore-clone
     max: 1
 
 
