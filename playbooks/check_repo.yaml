@@ -55,21 +55,18 @@
  
     - name: Merge changes from the source repository
       ansible.builtin.command:
-        cmd: git merge source/master
+        cmd: git merge source/master --no-commit --no-ff
         chdir: "{{ working_directory }}"
-      when: 
-        - git_result.changed
-        - changed
       register: merge_result
-      ignore_errors: true  # Dies ermöglicht die Registrierung von Fehlern zur späteren Prüfung
+      failed_when: merge_result.rc != 0 and 'CONFLICT' not in merge_result.stdout and 'CONFLICT' not in merge_result.stderr
+      ignore_errors: true
 
     - name: Check if there were conflicts
       ansible.builtin.fail:
         msg: "Merge conflicts detected. Manual intervention required."
-      when: 
-        - merge_result is defined
-        - merge_result.failed
-        - ("Conflicts:" in merge_result.stdout or "conflict" in merge_result.stderr)
+      when:
+        - merge_result.rc != 0
+        - ("CONFLICT" in merge_result.stdout or "CONFLICT" in merge_result.stderr)
 
     - name: Commit the merged changes if there were changes
       ansible.builtin.git:
