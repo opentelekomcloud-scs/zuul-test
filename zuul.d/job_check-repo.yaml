@@ -12,4 +12,4 @@
     #  - name: secret
     #    secret: SECRET_TEST 
     semaphores:
-      - name: semaphore-clone
+      - name: clone
