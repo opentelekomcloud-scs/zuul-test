@@ -2,7 +2,6 @@
     merge-mode: squash-merge
     check:
       jobs:
-        - noop
         - untrusted
     gate:
       jobs:
