@@ -1,7 +1,7 @@
 ---
 - job:
     name: check-repo
-    parent: hello-world
+    parent: otc
     description: "Checks if OSISM testbed Repo has had any changes since 24h"
     nodeset: ubuntu-jammy
     run: playbooks/check_repo.yaml
