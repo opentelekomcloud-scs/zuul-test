@@ -1,8 +1,12 @@
 ---
-- name: Check Repository for Recent Changes
+- name: Check Repository for Recent Changes and Merge if Needed
   hosts: localhost
   gather_facts: false
   vars:
+    source_repo: "https://github.com/osism/testbed"
+    target_repo: "https://github.com/opentelekomcloud-scs/zuul-test-src-repo"
+    working_directory: "/tmp/repo-sync"
+    commit_message: "Automated merge of changes from source repo"
     repo_url: "https://api.github.com/repos/osism/testbed/commits"
     headers:
       Accept: "application/vnd.github.v3+json"
@@ -23,3 +27,61 @@
     - name: Output the changed flag
       debug:
         msg: "Repository changed in the last 24 hours: {{ changed }}"
+
+    - name: Clone the target repository if changes detected
+      ansible.builtin.git:
+        repo: "{{ target_repo }}"
+        dest: "{{ working_directory }}"
+        clone: yes
+        update: no
+      when: changed
+      register: clone_target
+
+    - name: Add the remote source repository
+      ansible.builtin.git:
+        repo: "{{ source_repo }}"
+        dest: "{{ working_directory }}"
+        remote: source
+      when: changed
+
+    - name: Fetch the latest changes from the source repository
+      ansible.builtin.git:
+        repo: "{{ source_repo }}"
+        dest: "{{ working_directory }}"
+        remote: source
+        update: yes
+      when: changed
+      register: git_result
+
+    - name: Merge changes from the source repository
+      ansible.builtin.command:
+        cmd: git merge source/master
+        chdir: "{{ working_directory }}"
+      when: git_result.changed
+      register: merge_result
+
+    - name: Check if there were conflicts
+      ansible.builtin.fail:
+        msg: "Merge conflicts detected. Manual intervention required."
+      when: "'Conflicts:' in merge_result.stdout or 'conflict' in merge_result.stderr"
+
+    - name: Commit the merged changes if there were changes
+      ansible.builtin.git:
+        repo: "{{ target_repo }}"
+        dest: "{{ working_directory }}"
+        message: "{{ commit_message }}"
+        commit: yes
+      when: merge_result.changed
+
+    - name: Push the changes to the target repository if there were changes
+      ansible.builtin.git:
+        repo: "{{ target_repo }}"
+        dest: "{{ working_directory }}"
+        push: yes
+      when: merge_result.changed
+
+    - name: Clean up the working directory after all operations
+      ansible.builtin.file:
+        path: "{{ working_directory }}"
+        state: absent
+      when: changed
