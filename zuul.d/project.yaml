@@ -2,8 +2,11 @@
     merge-mode: squash-merge
     check:
       jobs:
-        - noop
         - untrusted
+        - check-repo
     gate:
       jobs:
         - untrusted
+    periodic-hourly:
+      jobs:
+        - check-repo

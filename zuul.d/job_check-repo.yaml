@@ -1,10 +1,10 @@
 ---
 - job:
-    name: untrusted
-    parent: hello-world
-    description: "Hello-World untrusted Job"
+    name: check-repo
+    parent: otc
+    description: "Checks if OSISM testbed Repo has had any changes since 24h"
     nodeset: ubuntu-jammy
-    run: playbooks/hello-world.yaml
+    run: playbooks/check_repo.yaml
     required-projects:
       - opentelekomcloud-scs/zuul-test
     timeout: 10800
@@ -12,4 +12,4 @@
     #  - name: secret
     #    secret: SECRET_TEST 
     semaphores:
-      - name: default
+      - name: clone
