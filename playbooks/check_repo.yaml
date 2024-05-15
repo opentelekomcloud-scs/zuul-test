@@ -61,13 +61,15 @@
         - git_result.changed
         - changed
       register: merge_result
+      ignore_errors: true  # Dies ermöglicht die Registrierung von Fehlern zur späteren Prüfung
 
     - name: Check if there were conflicts
       ansible.builtin.fail:
         msg: "Merge conflicts detected. Manual intervention required."
       when: 
-        - "'Conflicts:' in merge_result.stdout or 'conflict' in merge_result.stderr"
-        - changed
+        - merge_result is defined
+        - merge_result.failed
+        - ("Conflicts:" in merge_result.stdout or "conflict" in merge_result.stderr)
 
     - name: Commit the merged changes if there were changes
       ansible.builtin.git:
