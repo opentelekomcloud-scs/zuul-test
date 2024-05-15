@@ -3,7 +3,8 @@
   hosts: localhost
   gather_facts: false
   vars:
-    source_repo: "https://github.com/osism/testbed"
+#    source_repo: "https://github.com/osism/testbed"
+    source_repo: "https://github.com/opentelekomcloud-scs/zuul-test"
     target_repo: "https://github.com/opentelekomcloud-scs/zuul-test-src-repo"
     working_directory: "/tmp/repo-sync"
     commit_message: "Automated merge of changes from source repo"
