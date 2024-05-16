@@ -3,7 +3,6 @@
   hosts: localhost
   gather_facts: false
   vars:
-#    source_repo: "https://github.com/osism/testbed"
     source_repo: "https://github.com/opentelekomcloud-scs/zuul-test"
     target_repo: "https://github.com/opentelekomcloud-scs/zuul-test-src-repo"
     working_directory: "/tmp/repo-sync"
@@ -42,73 +41,30 @@
       when: changed
       register: clone_target
 
-    - name: Output the directory of the current playbook
+    - name: Debug
       debug:
-        msg: "The playbook is located in: {{ playbook_dir }}"
+        var: clone_target
 
-    - name: Output the directory tree
-      ansible.builtin.find:
-        paths: "{{ playbook_dir }}"
-        recurse: yes
-      register: files
- 
-    - name: Display all files and directories
-      debug:
-        msg: "{{ item.path }}"
-      loop: "{{ files.files }}"
+    - name: Execute playbooks if repository changed
+      block:
+        - name: Execute pre-deployment playbook
+          ansible.builtin.include_tasks: "{{ working_directory }}/playbooks/pre.yaml"
 
-    # - name: Add the remote source repository
-    #   ansible.builtin.git:
-    #     repo: "{{ source_repo }}"
-    #     dest: "{{ working_directory }}"
-    #     remote: source
-    #   when: changed 
+        - name: Execute deployment playbook
+          ansible.builtin.include_tasks: "{{ working_directory }}/playbooks/deploy.yaml"
 
-    # - name: Fetch the latest changes from the source repository
-    #   ansible.builtin.git: 
-    #     repo: "{{ source_repo }}" 
-    #     dest: "{{ working_directory }}"
-    #     remote: source
-    #     update: yes
-    #   when: changed
-    #   register: git_result
- 
-    # - name: Merge changes from the source repository
-    #   ansible.builtin.command:
-    #     cmd: git merge source/master --no-commit --no-ff
-    #     chdir: "{{ working_directory }}"
-    #   register: merge_result
-    #   failed_when: merge_result.rc != 0 and 'CONFLICT' not in merge_result.stdout and 'CONFLICT' not in merge_result.stderr
-    #   ignore_errors: true
+        - name: Execute post-deployment playbook
+          ansible.builtin.include_tasks: "{{ working_directory }}/playbooks/post.yaml"
+        
+        - name: Execute check playbook on successful deployment
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/check.yaml"
+          
+      when: changed
+      rescue:
+        - name: Handle errors in deployment scripts
+          debug:
+            msg: "An error occurred during the deployment process."
 
-    # - name: Check if there were conflicts
-    #   ansible.builtin.fail:
-    #     msg: "Merge conflicts detected. Manual intervention required."
-    #   when:
-    #     - merge_result.rc != 0
-    #     - ("CONFLICT" in merge_result.stdout or "CONFLICT" in merge_result.stderr)
-
-    # - name: Commit the merged changes if there were changes
-    #   ansible.builtin.git:
-    #     repo: "{{ target_repo }}"
-    #     dest: "{{ working_directory }}"
-    #     message: "{{ commit_message }}"
-    #     commit: yes
-    #   when: 
-    #     - merge_result.changed
-    #     - changed
-
-    # - name: Push the changes to the target repository if there were changes
-    #   ansible.builtin.git:
-    #     repo: "{{ target_repo }}"
-    #     dest: "{{ working_directory }}"
-    #     push: yes
-    #   when: 
-    #     - merge_result.changed
-    #     - changed
-
-    # - name: Clean up the working directory after all operations
-    #   ansible.builtin.file:
-    #     path: "{{ working_directory }}"
-    #     state: absent
-    #   when: changed
+      always:
+        - name: Execute cleanup playbook
+          ansible.builtin.include_tasks: "{{ working_directory }}/playbooks/cleanup.yaml"
