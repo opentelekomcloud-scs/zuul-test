@@ -50,7 +50,7 @@
     #   when: changed 
 
     # - name: Fetch the latest changes from the source repository
-    #   ansible.builtin.git:
+    #   ansible.builtin.git: 
     #     repo: "{{ source_repo }}" 
     #     dest: "{{ working_directory }}"
     #     remote: source
