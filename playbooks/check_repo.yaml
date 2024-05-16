@@ -32,21 +32,29 @@
       debug:
         msg: "Repository changed in the last 24 hours: {{ changed }}"
 
-    - name: Clone the target repository if changes detected
-      ansible.builtin.git:
-        repo: "{{ target_repo }}"
-        dest: "{{ working_directory }}"
-        clone: yes 
-        update: no
-      when: changed
-      register: clone_target
-
-    - name: Debug
-      debug:
-        var: clone_target
-
     - name: Execute playbooks if repository changed
       block:
+
+        - name: Clone the target repository if changes detected
+          ansible.builtin.git:
+            repo: "{{ target_repo }}"
+            dest: "{{ working_directory }}"
+            clone: yes 
+            update: no
+          when: changed
+          register: clone_target
+
+        - name: Find all files and directories working_directory
+          ansible.builtin.find:
+            paths: "{{ working_directory }}"
+            recurse: yes
+          register: files
+
+        - name: Display all files and directories
+          debug:
+            msg: "{{ item.path }}"
+          loop: "{{ files.files }}"
+
         - name: Execute pre-deployment playbook
           ansible.builtin.include_tasks: "{{ working_directory }}/playbooks/pre.yaml"
 
