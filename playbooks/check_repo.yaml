@@ -5,6 +5,7 @@
   vars:
     source_repo: "https://github.com/opentelekomcloud-scs/zuul-test"
     target_repo: "https://github.com/opentelekomcloud-scs/zuul-test-src-repo"
+    target_repo: "https://github.com/osism/testbed"
     working_directory: "/tmp/repo-sync"
     commit_message: "Automated merge of changes from source repo"
     repo_url: "https://api.github.com/repos/osism/testbed/commits"
