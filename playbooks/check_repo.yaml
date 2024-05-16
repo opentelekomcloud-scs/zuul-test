@@ -51,7 +51,7 @@
         paths: "{{ playbook_dir }}"
         recurse: yes
       register: files
-
+ 
     - name: Display all files and directories
       debug:
         msg: "{{ item.path }}"
