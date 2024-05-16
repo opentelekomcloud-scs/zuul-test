@@ -7,9 +7,13 @@
     run: playbooks/check_repo.yaml
     required-projects:
       - opentelekomcloud-scs/zuul-test
+      - osism/terraform-base
     timeout: 10800
-    #secrets:
-    #  - name: secret
-    #    secret: SECRET_TEST 
+    vars:
+      terraform_blueprint: testbed-managerless
+      cloud_env: managerless-otc
+    secrets:
+      - name: secret
+        secret: SECRET_TEST
     semaphores:
-      - name: clone
+      - name: testbed-manager
