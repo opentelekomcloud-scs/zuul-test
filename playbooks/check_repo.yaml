@@ -42,6 +42,21 @@
       when: changed
       register: clone_target
 
+    - name: Output the directory of the current playbook
+      debug:
+        msg: "The playbook is located in: {{ playbook_dir }}"
+
+    - name: Output the directory tree
+      ansible.builtin.find:
+        paths: "{{ playbook_dir }}"
+        recurse: yes
+      register: files
+
+    - name: Display all files and directories
+      debug:
+        msg: "{{ item.path }}"
+      loop: "{{ files.files }}"
+
     # - name: Add the remote source repository
     #   ansible.builtin.git:
     #     repo: "{{ source_repo }}"
@@ -50,7 +65,7 @@
     #   when: changed 
 
     # - name: Fetch the latest changes from the source repository
-    #   ansible.builtin.git:
+    #   ansible.builtin.git: 
     #     repo: "{{ source_repo }}" 
     #     dest: "{{ working_directory }}"
     #     remote: source
