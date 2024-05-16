@@ -36,7 +36,7 @@
       ansible.builtin.git:
         repo: "{{ target_repo }}"
         dest: "{{ working_directory }}"
-        clone: yes
+        clone: yes 
         update: no
       when: changed
       register: clone_target
