@@ -41,6 +41,10 @@
       when: changed
       register: clone_target
 
+    - name: Debug
+      debug:
+        var: clone_target
+
     - name: Execute playbooks if repository changed
       block:
         - name: Execute pre-deployment playbook
