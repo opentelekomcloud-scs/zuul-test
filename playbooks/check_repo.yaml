@@ -20,9 +20,9 @@
         return_content: true
       register: repo_commits
  
-    - name: Debug
-      debug:
-        var: repo_commits
+    # - name: Debug
+    #   debug:
+    #     var: repo_commits
 
     - name: Check if there are any commits in the last 24 hours
       set_fact:
