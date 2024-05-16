@@ -36,13 +36,18 @@
       block:
 
         - name: Clone the target repository if changes detected
-          ansible.builtin.git:
-            repo: "{{ target_repo }}"
-            dest: "{{ working_directory }}"
-            clone: yes 
-            update: no
+          ansible.builtin.shell:
+            cmd: |
+              if [ ! -d "{{ working_directory }}/.git" ]; then
+                git clone {{ target_repo }} {{ working_directory }}
+              else
+                echo "Repository already cloned."
+              fi
+          args:
+            executable: /bin/bash
           when: changed
-          register: clone_target
+          register: clone_result
+          changed_when: "'already cloned' not in clone_result.stdout"
 
         - name: Find all files and directories working_directory
           ansible.builtin.find:
