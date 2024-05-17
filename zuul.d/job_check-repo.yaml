@@ -15,5 +15,5 @@
     # secrets:
     #   - name: secret
     #     secret: SECRET_TEST
-    semaphores:
+    semaphores: 
       - name: testbed-manager 
