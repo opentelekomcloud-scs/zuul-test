@@ -7,6 +7,7 @@
     run: playbooks/check_repo.yaml
     required-projects:
       - opentelekomcloud-scs/zuul-test
+      - osism/testbed
     timeout: 10800
     # vars:
     #   terraform_blueprint: testbed-managerless
