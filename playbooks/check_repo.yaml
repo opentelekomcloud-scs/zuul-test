@@ -2,6 +2,8 @@
 - name: Check Repository for Recent Changes and Merge if Needed
   hosts: localhost
   gather_facts: false
+  vars_files:
+    - vars/repositories.yml  
   vars:
     source_repo: "https://github.com/opentelekomcloud-scs/zuul-test"
     # target_repo: "https://github.com/opentelekomcloud-scs/zuul-test-src-repo"
