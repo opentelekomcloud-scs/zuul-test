@@ -6,7 +6,7 @@
     source_repo: "https://github.com/opentelekomcloud-scs/zuul-test"
     # target_repo: "https://github.com/opentelekomcloud-scs/zuul-test-src-repo"
     target_repo: "https://github.com/osism/testbed"
-    working_directory: "/tmp/repo-sync"
+    basepath: "{{ ansible_user_dir }}/src/{{ repositories['testbed']['path'] }}"
     commit_message: "Automated merge of changes from source repo"
     repo_url: "https://api.github.com/repos/osism/testbed/commits"
     headers:
@@ -39,15 +39,15 @@
         - name: Clone the target repository if changes detected
           ansible.builtin.git:
             repo: "{{ target_repo }}"
-            dest: "{{ working_directory }}"
+            dest: "{{ basepath }}"
             clone: yes 
             update: no
           when: changed
           register: clone_target
 
-        - name: Find all files and directories working_directory
+        - name: Find all files and directories basepath
           ansible.builtin.find:
-            paths: "{{ working_directory }}/playbooks"
+            paths: "{{ basepath }}/playbooks"
             recurse: yes
           register: files
 
@@ -57,13 +57,13 @@
           loop: "{{ files.files }}"
 
         - name: Execute pre-deployment playbook
-          ansible.builtin.include_tasks: "{{ working_directory }}/playbooks/pre.yaml"
+          ansible.builtin.include_tasks: "{{ basepath }}/playbooks/pre.yaml"
 
         - name: Execute deployment playbook
-          ansible.builtin.include_tasks: "{{ working_directory }}/playbooks/deploy.yaml"
+          ansible.builtin.include_tasks: "{{ basepath }}/playbooks/deploy.yaml"
 
         - name: Execute post-deployment playbook
-          ansible.builtin.include_tasks: "{{ working_directory }}/playbooks/post.yaml"
+          ansible.builtin.include_tasks: "{{ basepath }}/playbooks/post.yaml"
         
         - name: Execute check playbook on successful deployment
           ansible.builtin.include_tasks: "{{ playbook_dir }}/check.yaml"
@@ -76,4 +76,4 @@
 
       always:
         - name: Execute cleanup playbook
-          ansible.builtin.include_tasks: "{{ working_directory }}/playbooks/cleanup.yaml"
+          ansible.builtin.include_tasks: "{{ basepath }}/playbooks/cleanup.yaml"
