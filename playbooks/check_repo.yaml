@@ -38,6 +38,10 @@
     - name: Execute playbooks if repository changed
       block:
 
+        - name: Debug Basepath
+          debug:
+            msg: "Basepath: {{ basepath }} bzw. {{ repositories['testbed']['path'] }}, Targetrepo: {{ repositories['testbed']['repo'] }}"
+
         - name: Clone the target repository if changes detected
           ansible.builtin.git:
             repo: "{{ target_repo }}"
