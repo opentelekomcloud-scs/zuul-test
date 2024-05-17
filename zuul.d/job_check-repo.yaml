@@ -12,7 +12,7 @@
     # vars:
     #   terraform_blueprint: testbed-managerless
     #   cloud_env: managerless-otc
-    # secrets:
+    # secrets:  
     #   - name: secret
     #     secret: SECRET_TEST
     semaphores: 
