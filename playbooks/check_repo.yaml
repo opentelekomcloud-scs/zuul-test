@@ -27,6 +27,10 @@
     #   debug:
     #     var: repo_commits
 
+    - name: Wait for 7200 seconds (2 hours)
+      wait_for:
+        timeout: 7200
+
     - name: Check if there are any commits in the last 24 hours
       set_fact:
         changed: "{{ (repo_commits.json | selectattr('commit.committer.date', 'gt', time_limit) | list | count) > 0 }}"
