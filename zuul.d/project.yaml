@@ -7,7 +7,7 @@
         - check-nodepool
     post:
       jobs:
-        - check-nodepool
+        - check-nodepool 
     gate:
       jobs:
         - untrusted
