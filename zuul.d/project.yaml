@@ -4,7 +4,7 @@
     check:
       jobs:
         - untrusted
-        - check-nodepool
+        - check_nodepool
     gate:
       jobs:
         - untrusted
