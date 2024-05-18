@@ -31,7 +31,7 @@
     #     is_zuul: false
     #     terragrunt_tfpath: terraform
     #   when: "'nodepool' not in hostvars[groups['all'][0]]"
-
+ 
     - name: Install jq
       become: true
       package:
