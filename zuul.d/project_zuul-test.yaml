@@ -3,7 +3,7 @@
     default-branch: main    
     check:
       jobs:
-        - untrusted
+        - check-nodepool
     post:
       jobs:
         - untrusted
