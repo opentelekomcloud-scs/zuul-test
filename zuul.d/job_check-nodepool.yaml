@@ -6,7 +6,8 @@
     nodeset: ubuntu-jammy-nodeset
     run: playbooks/check-nodepool.yaml 
     required-projects:
-      - opentelekomcloud-scs/zuul-test
+      - opentelekomcloud-scs/zuul-test-config
+      - opentelekomcloud-scs/zuul-test      
       - osism/testbed
       - osism/terraform-base       
     timeout: 10800
@@ -18,4 +19,4 @@
     #     secret: SECRET_TEST 
     semaphores: 
       - name: default 
-     
+      
