@@ -18,20 +18,53 @@
       Accept: "application/vnd.github.v3+json"
     time_limit: "{{ lookup('pipe', 'date --date=\"24 hours ago\" +%Y-%m-%dT%H:%M:%SZ') }}"
   tasks:
-    - name: Set facts (Zuul deployment)
-      ansible.builtin.set_fact:
-        cloud_env: "{{ cloud_envs[hostvars[groups['all'][0]]['nodepool']['label']] }}"
-        is_zuul: true
-        terragrunt_tfpath: "{{ ansible_user_dir }}/terraform"
-      when: "'nodepool' in hostvars[groups['all'][0]]"
+    # - name: Set facts (Zuul deployment)
+    #   ansible.builtin.set_fact:
+    #     cloud_env: "{{ cloud_envs[hostvars[groups['all'][0]]['nodepool']['label']] }}"
+    #     is_zuul: true
+    #     terragrunt_tfpath: "{{ ansible_user_dir }}/terraform"
+    #   when: "'nodepool' in hostvars[groups['all'][0]]"
 
-    - name: Set facts (local deployment)
-      ansible.builtin.set_fact:
-        cloud_env: "{{ testbed_environment | default('ci') }}"
-        is_zuul: false
-        terragrunt_tfpath: terraform
-      when: "'nodepool' not in hostvars[groups['all'][0]]"
-        
+    # - name: Set facts (local deployment)
+    #   ansible.builtin.set_fact:
+    #     cloud_env: "{{ testbed_environment | default('ci') }}"
+    #     is_zuul: false
+    #     terragrunt_tfpath: terraform
+    #   when: "'nodepool' not in hostvars[groups['all'][0]]"
+
+    - name: Install jq
+      become: true
+      package:
+        name: jq
+        state: present
+
+    - name: Fetch instance metadata
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/meta_data.json
+      register: metadata
+
+    - name: Print instance metadata
+      debug:
+        msg: "{{ metadata.stdout | from_json }}"
+
+    - name: Fetch user data
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/user_data
+      register: userdata
+
+    - name: Print user data
+      debug:
+        msg: "{{ userdata.stdout }}"
+
+    - name: Fetch network data
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/network_data.json
+      register: networkdata
+
+    - name: Print network data
+      debug:
+        msg: "{{ networkdata.stdout | from_json }}"
+
     - name: Get the latest commits from the repository
       uri:
         url: "{{ repo_url }}"
