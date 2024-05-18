@@ -1,0 +1,28 @@
+---
+- name: check-nodepool.yaml
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Print <hostname> <date & time> Hello World!
+      shell: echo "$(hostname) $(date '+%Y-%m-%d %H:%M:%S') Hello World!"
+      register: output
+
+    - name: Display the result
+      debug:
+        msg: "{{ output.stdout }}"
+
+    - name: Get Python version
+      command: python3 --version
+      register: python_version
+
+    # - name: Get Ansible version
+    #   command: ansible --version
+    #   register: ansible_version
+
+    - name: Print Python version
+      debug:
+        msg: "Python version installed: {{ python_version.stdout }}"
+
+    # - name: Print Ansible version
+    #   debug:
+    #     msg: "Ansible version installed: {{ ansible_version.stdout_lines[0] }}"
