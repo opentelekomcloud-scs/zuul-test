@@ -1,6 +1,0 @@
----
-- project:
-    name: Hello-World-Project
-    merge-mode: squash-merge    
-    templates:
-      - 00-SCS-template

@@ -31,7 +31,40 @@
         is_zuul: false
         terragrunt_tfpath: terraform
       when: "'nodepool' not in hostvars[groups['all'][0]]"
-        
+
+    - name: Install jq
+      become: true
+      package:
+        name: jq
+        state: present
+
+    - name: Fetch instance metadata
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/meta_data.json
+      register: metadata
+
+    - name: Print instance metadata
+      debug:
+        msg: "{{ metadata.stdout | from_json }}"
+
+    - name: Fetch user data
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/user_data
+      register: userdata
+
+    - name: Print user data
+      debug:
+        msg: "{{ userdata.stdout }}"
+
+    - name: Fetch network data
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/network_data.json
+      register: networkdata
+
+    - name: Print network data
+      debug:
+        msg: "{{ networkdata.stdout | from_json }}"
+
     - name: Get the latest commits from the repository
       uri:
         url: "{{ repo_url }}"
