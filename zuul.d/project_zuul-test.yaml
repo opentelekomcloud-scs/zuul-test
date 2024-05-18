@@ -4,9 +4,9 @@
     check:
       jobs:
         - check-nodepool
-    post:
-      jobs:
-        - untrusted
+    # post:
+    #   jobs:
+    #     - untrusted
     gate:
       jobs:
         - untrusted

@@ -1,6 +1,6 @@
 ---
 - name: Playbook check-nodepool.yaml
-  hosts: all
+  hosts: localhost
   gather_facts: no
   tasks:
     - name: Print <hostname> <date & time> Hello World!
@@ -19,6 +19,14 @@
       debug:
         msg: "Python version installed: {{ python_version.stdout }}"
 
+    - name: Inventar im JSON-Format ausgeben
+      command: ansible-inventory --list --output inventory.json
+      register: inventory_output
+
+    - name: Inventar ausgeben
+      debug:
+        msg: "{{ inventory_output.stdout }}"
+
     - name: write file to tmp
       ansible.builtin.command:
         cmd: "echo 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' > /tmp/file"
@@ -27,9 +35,10 @@
 
     - name: Install jq
       become: true
-      package:
+      apt:
         name: jq
         state: present
+        update_cache: yes
 
     - name: Fetch instance metadata
       become: true
