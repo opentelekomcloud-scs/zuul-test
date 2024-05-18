@@ -195,7 +195,7 @@ kubectl exec -it -n zuul-ci "$ZUUL_POD" -c zuul -- bash -c '
 '
 ```
 
-## Autohold
+## Autohold 
 This command uses the `~/.zuul.conf` with auth string 
 
 ### Autohold-list
