@@ -1,0 +1,85 @@
+---
+- name: Check nodepool
+  hosts: all
+
+  vars_files:
+    - vars/repositories.yml
+
+  vars:
+    ansible_galaxy: ~/venv/bin/ansible-galaxy
+    ansible_path: "{{ basepath }}/ansible"
+    ansible_playbook: ~/venv/bin/ansible-playbook
+    basepath: "{{ ansible_user_dir }}/src/{{ repositories['testbed']['path'] }}"
+    manager_address_file: "{{ terraform_path }}/.MANAGER_ADDRESS.{{ cloud_env }}"
+    repo_path: "{{ ansible_user_dir }}/src/{{ repository_server }}"
+
+    manual_create: false
+    manual_deploy: false
+
+    terraform_binary: "{{ ansible_user_dir }}/terragrunt"
+    terraform_path: "{{ basepath }}/terraform"
+
+    version_ceph: "{{ ceph_version | default('quincy') }}"
+    version_manager: "{{ manager_version | default('latest') }}"
+    version_openstack: "{{ openstack_version | default('2023.2') }}"
+
+    run_bootstrap: true
+    run_checks: true
+
+    in_a_nutshell: "{{ nutshell | default(false) | bool }}"
+    run_refstack: "{{ refstack | default(false) | bool }}"
+
+  tasks:
+    - name: Include hello_world.yaml -----------------------------------------------------------
+      include: hello_world.yaml
+
+    - name: write file to tmp
+      ansible.builtin.command:
+        cmd: "echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" > /tmp/file"
+      changed_when: true
+      ignore_errors: true
+
+    - name: Install jq
+      become: true
+      package:
+        name: jq
+        state: present
+
+    - name: Fetch instance metadata
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/meta_data.json
+      register: metadata
+
+    - name: Print instance metadata
+      debug:
+        msg: "{{ metadata.stdout | from_json }}"
+
+    - name: Fetch user data
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/user_data
+      register: userdata
+
+    - name: Print user data
+      debug:
+        msg: "{{ userdata.stdout }}"
+
+    - name: Fetch network data
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/network_data.json
+      register: networkdata
+
+    - name: Print network data
+      debug:
+        msg: "{{ networkdata.stdout | from_json }}"
+
+    - name: Get the latest commits from the repository
+      uri:
+        url: "{{ repo_url }}"
+        method: GET
+        headers: "{{ headers }}"
+        return_content: true
+      register: repo_commits
+ 
+    - name: Debug
+      debug:
+        var: repo_commits  
