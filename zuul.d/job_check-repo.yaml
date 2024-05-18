@@ -8,6 +8,7 @@
     required-projects:
       - opentelekomcloud-scs/zuul-test
       - osism/testbed
+      - osism/terraform-base      
     timeout: 10800
     # vars:
     #   terraform_blueprint: testbed-managerless

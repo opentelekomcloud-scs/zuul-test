@@ -1,0 +1,206 @@
+---
+- name: Copy custom facts
+  hosts: testbed-manager.testbed.osism.xyz
+  connection: local
+  gather_facts: false
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    apt_lock_timeout: 300
+
+  tasks:
+    - name: Install required packages
+      become: true
+      ansible.builtin.apt:
+        name: python3-netifaces
+        state: present
+        lock_timeout: "{{ apt_lock_timeout }}"
+
+    - name: Create custom facts directory
+      become: true
+      ansible.builtin.file:
+        path: /etc/ansible/facts.d
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Copy fact files
+      become: true
+      ansible.builtin.copy:
+        src: /opt/configuration/environments/custom/files/testbed_network_devices.fact
+        dest: /etc/ansible/facts.d/testbed_network_devices.fact
+        owner: root
+        group: root
+        mode: 0755
+
+# With this play, we can decouple the pull of the required images from the
+# subsequent roles (traefik, manager, netbox). This makes problems resulting
+# from image pulls more visible in the CI.
+- name: Before the deployment of the manager
+  hosts: testbed-manager.testbed.osism.xyz
+  connection: local
+  gather_facts: true
+
+  vars:
+    images:
+      - "{{ ara_server_image }}"
+      - "{{ ara_server_mariadb_image }}"
+      - "{{ ceph_ansible_image }}"
+      - "{{ inventory_reconciler_image }}"
+      - "{{ kolla_ansible_image }}"
+      - "{{ manager_redis_image }}"
+      - "{{ netbox_image }}"
+      - "{{ osism_ansible_image }}"
+      - "{{ osism_image }}"
+      - "{{ osism_netbox_image }}"
+      - "{{ postgres_image }}"
+      - "{{ traefik_image }}"
+      - "{{ vault_image }}"
+
+  vars_files:
+    - /opt/configuration/environments/manager/configuration.yml
+    - /opt/configuration/environments/configuration.yml
+    - /opt/configuration/environments/manager/images.yml
+
+  tasks:
+    - name: Pull images
+      community.docker.docker_image:
+        name: "{{ item }}"
+        source: pull
+      async: 1200
+      poll: 0
+      loop: "{{ images }}"
+      register: async_results
+
+    - name: Check status
+      ansible.builtin.async_status:
+        jid: "{{ async_result_item.ansible_job_id }}"
+      loop: "{{ async_results.results }}"
+      loop_control:
+        loop_var: "async_result_item"
+      register: async_poll_results
+      until: async_poll_results.finished
+      retries: 120
+      delay: 10
+
+    - name: Check if /etc/osism-ci-image exist
+      ansible.builtin.stat:
+        path: /etc/osism-ci-image
+      register: result
+
+    - name: Add ara_server_mariadb_volume_type parameter
+      ansible.builtin.lineinfile:
+        path: /opt/configuration/environments/manager/configuration.yml
+        line: "ara_server_mariadb_volume_type: tmpfs"
+      when:
+        - result.stat.exists is defined
+        - result.stat.exists | bool
+
+    - name: Add netbox_postgres_volume_type parameter
+      ansible.builtin.lineinfile:
+        path: /opt/configuration/environments/infrastructure/configuration.yml
+        line: "netbox_postgres_volume_type: tmpfs"
+      when:
+        - result.stat.exists is defined
+        - result.stat.exists | bool
+
+    # This speeds up the Refstack tests that interact with Glance. The use of these
+    # paraemters in production is not recommended. Further details in OSSN-0090.
+    # https://wiki.openstack.org/wiki/OSSN/OSSN-0090
+    - name: Use insecure glance configuration
+      ansible.builtin.copy:
+        dest: /opt/configuration/environments/kolla/files/overlays/glance/glance-api.conf
+        content: |
+          [DEFAULT]
+          show_image_direct_url = True
+          show_multiple_locations = True
+        owner: dragon
+        group: dragon
+        mode: 0644
+      when:
+        - result.stat.exists is defined
+        - result.stat.exists | bool
+
+    - name: Check if /etc/OTC_region exist
+      ansible.builtin.stat:
+        path: /etc/OTC_region
+      register: result
+
+    # It is not possible to use nested virtualization @ OTC
+    - name: Add nova_compute_virt_type parameter
+      ansible.builtin.lineinfile:
+        path: /opt/configuration/environments/kolla/configuration.yml
+        line: "nova_compute_virt_type: qemu"
+      when:
+        - result.stat.exists is defined
+        - result.stat.exists | bool
+
+- name: Apply role traefik & netbox
+  hosts: testbed-manager.testbed.osism.xyz
+  connection: local
+  gather_facts: true
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  vars_files:
+    - /opt/configuration/inventory/group_vars/testbed-managers.yml
+    - /opt/configuration/inventory/host_vars/testbed-manager.testbed.osism.xyz/vars.yml
+    - /opt/configuration/environments/manager/configuration.yml
+    - /opt/configuration/environments/manager/images.yml
+    - /opt/configuration/environments/manager/secrets.yml
+    - /opt/configuration/environments/infrastructure/configuration.yml
+    - /opt/configuration/environments/infrastructure/images.yml
+    - /opt/configuration/environments/infrastructure/secrets.yml
+    - /opt/configuration/environments/configuration.yml
+    - /opt/configuration/environments/secrets.yml
+
+  tasks:
+    - name: Apply traefik role
+      ansible.builtin.include_role:
+        name: osism.services.traefik
+
+    - name: Try to apply the netbox role
+      block:  # noqa osism-fqcn
+        - name: Apply netbox role
+          ansible.builtin.include_role:
+            name: osism.services.netbox
+      rescue:
+        - name: Collect debug logs
+          ansible.builtin.shell: |
+            docker images
+            docker ps -a
+            docker logs netbox-netbox-1
+          changed_when: true
+
+- name: Deploy manager service
+  hosts: testbed-manager.testbed.osism.xyz
+  connection: local
+  gather_facts: true
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    manager_service_restart: false
+
+  vars_files:
+    - /opt/configuration/inventory/group_vars/testbed-managers.yml
+    - /opt/configuration/inventory/host_vars/testbed-manager.testbed.osism.xyz/vars.yml
+    - /opt/configuration/environments/manager/configuration.yml
+    - /opt/configuration/environments/manager/images.yml
+    - /opt/configuration/environments/manager/secrets.yml
+    - /opt/configuration/environments/configuration.yml
+    - /opt/configuration/environments/secrets.yml
+
+  tasks:
+    - name: Try to apply the manager role
+      block:  # noqa osism-fqcn
+        - name: Apply manager role
+          ansible.builtin.include_role:
+            name: osism.services.manager
+      rescue:
+        - name: Collect debug logs
+          ansible.builtin.shell: |
+            docker images
+            docker ps -a
+          changed_when: true
