@@ -18,3 +18,4 @@
     #     secret: SECRET_TEST
     semaphores: 
       - name: default 
+  
