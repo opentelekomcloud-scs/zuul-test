@@ -31,7 +31,7 @@
     #     is_zuul: false
     #     terragrunt_tfpath: terraform
     #   when: "'nodepool' not in hostvars[groups['all'][0]]"
-
+ 
     - name: Install jq
       become: true
       package:
@@ -79,7 +79,8 @@
 
     - name: Wait for 7200 seconds (2 hours)
       wait_for:
-        timeout: 7200
+#        timeout: 7200
+        timeout: 1800
 
     - name: Check if there are any commits in the last 24 hours
       set_fact:
