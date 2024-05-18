@@ -3,8 +3,8 @@
     name: check-nodepool
     parent: otc
     description: "Debug session to check nodepool environment"
-    #nodeset: ubuntu-jammy-nodeset
-    run: playbooks/check-nodepool.yaml
+    nodeset: ubuntu-jammy-nodeset
+    run: playbooks/check-nodepool.yaml 
     required-projects:
       - opentelekomcloud-scs/zuul-test
       - osism/testbed
