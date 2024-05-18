@@ -4,10 +4,10 @@
     check:
       jobs:
         - untrusted
-        - check-repo
+        - check-nodepool
     gate:
       jobs:
         - untrusted
     periodic-hourly:
       jobs:
-        - check-repo
+        - untrusted

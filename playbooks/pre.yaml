@@ -5,7 +5,7 @@
   tasks:
     - name: Print pre.yaml message
       debug:
-        msg: "pre.yaml"
+        msg: "--------------------------------------------------> pre.yaml"
 
     - name: Include hello_world.yaml
       include: hello_world.yaml
