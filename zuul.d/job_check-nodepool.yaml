@@ -1,0 +1,20 @@
+---
+- job:
+    name: check-nodepool
+    parent: otc
+    description: "Debug session to check nodepool environment"
+    nodeset: ubuntu-jammy
+    run: playbooks/check_nodepool.yaml
+    required-projects:
+      - opentelekomcloud-scs/zuul-test
+      - osism/testbed
+      - osism/terraform-base      
+    timeout: 10800
+    # vars:
+    #   terraform_blueprint: testbed-managerless
+    #   cloud_env: managerless-otc
+    # secrets:  
+    #   - name: secret
+    #     secret: SECRET_TEST
+    semaphores: 
+      - name: default 
