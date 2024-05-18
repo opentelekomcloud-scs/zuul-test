@@ -35,7 +35,7 @@
 
     - name: write file to tmp
       ansible.builtin.command:
-        cmd: "echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" > /tmp/file"
+        cmd: "echo 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' > /tmp/file"
       changed_when: true
       ignore_errors: true
 
