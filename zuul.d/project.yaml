@@ -4,7 +4,6 @@
     check:
       jobs:
         - untrusted
-        - check-nodepool
     post:
       jobs:
         - check-nodepool 
