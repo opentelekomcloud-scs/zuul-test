@@ -1,5 +1,5 @@
 ---
-- name: check-nodepool.yaml
+- name: Playbook check-nodepool.yaml
   hosts: all
   gather_facts: no
   tasks:
