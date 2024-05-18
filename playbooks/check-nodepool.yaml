@@ -57,3 +57,4 @@
     - name: Print network data
       debug:
         msg: "{{ networkdata.stdout | from_json }}"
+ 
