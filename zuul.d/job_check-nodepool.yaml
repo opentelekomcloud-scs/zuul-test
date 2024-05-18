@@ -15,7 +15,7 @@
     #   cloud_env: managerless-otc
     # secrets:  
     #   - name: secret
-    #     secret: SECRET_TEST
+    #     secret: SECRET_TEST 
     semaphores: 
       - name: default 
    
