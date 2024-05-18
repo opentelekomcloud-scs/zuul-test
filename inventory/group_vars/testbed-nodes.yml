@@ -1,0 +1,104 @@
+---
+##########################################################
+# netbox
+
+netbox_inventory_status: Active
+netbox_inventory_device_role: generic-node
+netbox_inventory_tags:
+  - generic
+  - control
+  - compute
+  - network
+  - ceph-control
+  - ceph-resource
+
+##########################################################
+# docker
+
+docker_network_mtu: "{{ testbed_mtu_node }}"
+
+docker_configure_proxy: true
+docker_proxy_http: "http://{{ groups['manager'][0] }}:3128"
+docker_proxy_https: "{{ docker_proxy_http }}"
+docker_proxy_no_proxy_extra:
+  - 192.168.16.254
+  - 192.168.16.5
+  - 192.168.16.8
+  - 192.168.16.9
+  - api
+  - api-int
+  - api-int.testbed.osism.xyz
+  - api.testbed.osism.xyz
+  - keycloak.testbed.osism.xyz
+  - testbed-manager
+  - testbed-manager.testbed.osism.xyz
+
+##########################################################
+# proxy
+
+proxy_proxies:
+  http: "http://{{ groups['manager'][0] }}:3128"
+  https: "http://{{ groups['manager'][0] }}:3128"
+proxy_no_proxy_extra:
+  - 192.168.16.254
+  - 192.168.16.5
+  - 192.168.16.8
+  - 192.168.16.9
+  - api
+  - api-int
+  - api-int.testbed.osism.xyz
+  - api.testbed.osism.xyz
+  - keycloak.testbed.osism.xyz
+  - testbed-manager
+  - testbed-manager.testbed.osism.xyz
+
+##########################################################
+# generic
+
+internal_address: "192.168.16.{{ node_id }}"
+internal_interface: "{{ ansible_local.testbed_network_devices.management }}"
+
+console_interface: "{{ internal_interface }}"
+management_interface: "{{ internal_interface }}"
+
+##########################################################
+# netdata
+
+netdata_host_type: client
+
+##########################################################
+# network
+
+network_type: netplan
+
+network_ethernets:
+  "{{ ansible_local.testbed_network_devices.management }}":
+    dhcp4: true
+    mtu: "{{ testbed_mtu_node }}"
+
+network_dispatcher_scripts:
+  - src: /opt/configuration/network/vxlan.sh
+    dest: routable.d/vxlan.sh
+
+##########################################################
+# kolla
+
+network_interface: "{{ ansible_local.testbed_network_devices.management }}"
+neutron_external_interface: vxlan0
+octavia_network_interface: ohm0
+
+##########################################################
+# ceph
+
+monitor_address: "192.168.16.{{ node_id }}"
+radosgw_address: "192.168.16.{{ node_id }}"
+
+# New parameter as of OSISM 7.0.0
+ceph_osd_devices: "{{ ansible_local.testbed_ceph_osd_devices }}"
+
+# Old parameter until OSISM 6.0.2
+devices: "{{ ansible_local.testbed_ceph_devices }}"
+
+# NOTE: to use the third block device for Ceph change this parameter as follows
+# ceph_osd_devices: "{{ ansible_local.testbed_ceph_osd_devices_all }}"
+# devices: "{{ ansible_local.testbed_ceph_devices }}"
