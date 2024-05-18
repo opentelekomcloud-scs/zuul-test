@@ -1,6 +1,6 @@
 ---
 - name: Check Repository for Recent Changes and Merge if Needed
-  hosts: localhost
+  hosts: all
   gather_facts: true
   vars_files:
     - vars/repositories.yml  
