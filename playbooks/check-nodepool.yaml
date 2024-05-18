@@ -15,14 +15,45 @@
       command: python3 --version
       register: python_version
 
-    # - name: Get Ansible version
-    #   command: ansible --version
-    #   register: ansible_version
-
     - name: Print Python version
       debug:
         msg: "Python version installed: {{ python_version.stdout }}"
 
-    # - name: Print Ansible version
-    #   debug:
-    #     msg: "Ansible version installed: {{ ansible_version.stdout_lines[0] }}"
+    - name: write file to tmp
+      ansible.builtin.command:
+        cmd: "echo 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' > /tmp/file"
+      changed_when: true
+      ignore_errors: true
+
+    - name: Install jq
+      become: true
+      package:
+        name: jq
+        state: present
+
+    - name: Fetch instance metadata
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/meta_data.json
+      register: metadata
+
+    - name: Print instance metadata
+      debug:
+        msg: "{{ metadata.stdout | from_json }}"
+
+    - name: Fetch user data
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/user_data
+      register: userdata
+
+    - name: Print user data
+      debug:
+        msg: "{{ userdata.stdout }}"
+
+    - name: Fetch network data
+      become: true
+      command: curl -s http://169.254.169.254/openstack/latest/network_data.json
+      register: networkdata
+
+    - name: Print network data
+      debug:
+        msg: "{{ networkdata.stdout | from_json }}"
